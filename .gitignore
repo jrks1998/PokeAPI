@@ -1,0 +1,107 @@
+﻿# Arquivos de build e compilação
+bin/
+obj/
+*.csproj.user
+*.user
+*.suo
+*.cache
+*.dll
+*.pdb
+*.exe
+*.msi
+*.msix
+*.msixbundle
+*.appx
+*.appxbundle
+*.nupkg
+
+# Pastas de saída do build
+[Bb]in/
+[Oo]bj/
+[Pp]ublish/
+[Dd]ebug/
+[Rr]elease/
+
+# Arquivos de configuração sensíveis
+appsettings.json
+appsettings.*.json
+*.config
+*.config.*.json
+*.secrets.json
+*.key
+*.pem
+*.cer
+
+# Arquivos de ambiente e segredos
+.env
+.env.local
+.env.*.local
+*.env
+
+# Pastas de dependências
+node_modules/
+wwwroot/lib/
+packages/
+
+# Arquivos de IDEs e editores
+.vscode/
+.idea/
+*.sln.ide
+*.sublime-workspace
+*.sublime-project
+*.code-workspace
+*.vs/
+*.swp
+*~
+
+# Arquivos de testes
+[Tt]est[Rr]esult*/
+[Cc]overage/
+*.trx
+*.xml
+*.coverage
+*.coveragexml
+
+# Arquivos de logs
+*.log
+logs/
+*.log.*
+
+# Arquivos de pacotes NuGet
+*.nupkg
+NuGet.Config
+.nuget/
+packages/
+
+# Arquivos de deploy
+[Dd]eploy/
+[Pp]ublishProfiles/
+*.pubxml
+*.pubxml.user
+
+# Arquivos de banco de dados local
+*.mdf
+*.ldf
+*.sdf
+*.bak
+
+# Arquivos temporários
+*.tmp
+*.temp
+*.bak
+*.cache
+*.swp
+Thumbs.db
+.DS_Store
+
+# Docker
+docker-compose.override.yml
+*.dockerignore
+
+# Outros
+*.lock.json
+*.lock
+*.pidb
+*.resharper
+*.DotSettings
+*.DotSettings.user
