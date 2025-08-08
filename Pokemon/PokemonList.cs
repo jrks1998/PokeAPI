@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace pokeAPI.Pokemons;
+namespace Pokemon;
 
 public record PokemonList
 {

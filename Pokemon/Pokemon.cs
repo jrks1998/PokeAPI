@@ -1,22 +1,27 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace pokeAPI.Pokemons;
+namespace Pokemon;
 
 [Table("pokemons")]
 public class Pokemon
 {
     [Key]
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-    [Column("id")]
+    [Column("pokemon_id")]
     public int Id { get; init; }
-    [Column("nome")]
+    [Column("name")]
     public string Nome { get; set; }
+    [Column("color_id")]
+    public int CorPokemonId { get; set; }
+    public CorPokemon CorPokemon { get; set; }
 
     Pokemon() { }
 
-    public Pokemon(DadosCadastroPokemon dados)
+    public Pokemon(string nome, CorPokemon cor)
     {
-        Nome = dados.Nome;
+        Nome = nome;
+        CorPokemonId = cor.Id;
+        CorPokemon = cor;
     }
 }

@@ -1,4 +1,4 @@
-﻿namespace pokeApi.Service;
+﻿namespace Service;
 
 public class ConsomeApi
 {
@@ -16,7 +16,7 @@ public class ConsomeApi
         }
         catch (HttpRequestException e)
         {
-            throw new Exception("Erro ao obter dados: {e.Message}");
+            throw new Exception("Erro ao obter dados dos pokemons, " + e.Message);
         }
     }
 
@@ -25,14 +25,14 @@ public class ConsomeApi
         try
         {
             HttpClient client = new HttpClient();
-            HttpResponseMessage resp = await client.GetAsync(urlBase + "pokemon-species/" + nome);
+            var resp = await client.GetAsync(urlBase + "pokemon-species/" + nome);
             resp.EnsureSuccessStatusCode();
             string json = await resp.Content.ReadAsStringAsync();
             return json;
         }
         catch (HttpRequestException e)
         {
-            throw new Exception("Erro ao obter dados: {e.Message}");
+            throw new Exception("Erro ao obter dados das especies, " + e.Message);
         }
     }
 }

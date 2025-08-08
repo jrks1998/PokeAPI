@@ -1,6 +1,6 @@
 ﻿using System.Text.Json.Serialization;
 
-namespace pokeAPI.Pokemon;
+namespace Pokemon;
 
 public record DadosCorPokemon
 {

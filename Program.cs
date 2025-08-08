@@ -1,22 +1,28 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using pokeAPI.Dados;
-using pokeApi.Service;
+using PokeAPI.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
-var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var user = Environment.GetEnvironmentVariable("DB_USER");
+var pass = Environment.GetEnvironmentVariable("DB_PASS");
+var db = Environment.GetEnvironmentVariable("DB_NAME");
+var connectionString = $"Host=localhost;Port=50001;Database={db};Username={user};Password={pass};";
+builder.Services.AddDbContext<PokemonRepository>(options =>
+    options.UseNpgsql(connectionString));
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddDbContext<AppDbContext>(options =>
+builder.Services.AddDbContext<PokemonRepository>(options =>
     options.UseNpgsql(connectionString));
 builder.Services.AddControllers();
 
 builder.Services.AddSwaggerGen(c =>
 {
-    c.SwaggerDoc("v1", new OpenApiInfo{ Title = "PokeAPI", Version = "v1" });
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "PokeAPI", Version = "v1" });
 });
+
+
 
 var app = builder.Build();
 
@@ -33,9 +39,5 @@ if (app.Environment.IsDevelopment())
 
 app.UseRouting();
 app.UseEndpoints(endpoints => endpoints.MapControllers());
-
-PokemonService service = new PokemonService();
-string json = await service.agruparPorCor();
-Console.WriteLine(json);
 
 app.Run();

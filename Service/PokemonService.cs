@@ -1,14 +1,14 @@
 ﻿using System.Text.Json;
-using pokeAPI.Pokemon;
-using pokeAPI.Pokemons;
+using PokemonClass = Pokemon.Pokemon;
+using Pokemon;
 
-namespace pokeApi.Service;
+namespace Service;
 
 public class PokemonService
 {
     private ConsomeApi _consomeApi = new ConsomeApi();
-    private List<DadosCadastroPokemon> listaDadosCadastroPokemon = new List<DadosCadastroPokemon>();
-    
+    private List<PokemonClass> listaDadosCadastroPokemon = new List<PokemonClass>();
+
     public async Task<List<DadosPokemon>> obterNomesPokemons()
     {
         var json = await _consomeApi.obterDadosPokemon();
@@ -36,17 +36,19 @@ public class PokemonService
 
     public async Task<string> agruparPorCor()
     {
-        var pokemons = await obterNomesPokemons();
-        foreach (var pokemon in pokemons)
+        var nomePokemons = await obterNomesPokemons();
+        foreach (var nomePokemon in nomePokemons)
         {
-            string nome = pokemon.Nome;
-            string cor = await obterCorPokemon(nome);
-            DadosCadastroPokemon dados = new DadosCadastroPokemon(nome, cor);
-            listaDadosCadastroPokemon.Add(dados);
+            string nome = nomePokemon.Nome;
+            string corPokemon = await obterCorPokemon(nome);
+            CorPokemon cor = new CorPokemon(corPokemon);
+            PokemonClass pokemon = new PokemonClass(nome, cor);
+            Console.WriteLine($"inserindo Pokemon: {pokemon.Nome} com cor: {pokemon.CorPokemon.Cor}");
+            listaDadosCadastroPokemon.Add(pokemon);
         }
 
         var agrupado = listaDadosCadastroPokemon
-            .GroupBy(p => p.Cor)
+            .GroupBy(p => p.CorPokemon.Cor)
             .ToDictionary(
                 grupo => grupo.Key,
                 grupo => grupo.Select(p => p.Nome).ToList()
