@@ -1,3 +1,10 @@
 namespace Pokemon;
 
-public record DadosCadastroPokemon(string Cor, List<string> nomes);
+public class DadosCadastroPokemon : Dictionary<string, List<string>>
+{
+    public DadosCadastroPokemon() : base()
+    { }
+
+    public DadosCadastroPokemon(IDictionary<string, List<string>> dictionary) : base(dictionary)
+    { }
+}

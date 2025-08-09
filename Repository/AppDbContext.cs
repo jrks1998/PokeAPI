@@ -13,23 +13,21 @@ public class PokemonRepository : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<PokemonClass>(entity =>
+        modelBuilder.Entity<CorPokemon>(entity =>
+        {
+            entity.Property(c => c.Id).ValueGeneratedOnAdd();
+            entity.Property(c => c.Cor).IsRequired().HasMaxLength(50);
+            entity.HasMany(c => c.Pokemons)
+                .WithOne(p => p.Cor)
+                .HasForeignKey(p => p.CorPokemonId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+         modelBuilder.Entity<PokemonClass>(entity =>
         {
             entity.Property(p => p.Id).ValueGeneratedOnAdd();
             entity.Property(p => p.Nome).IsRequired().HasMaxLength(100);
             entity.Property(p => p.CorPokemonId).IsRequired();
         });
-
-        modelBuilder.Entity<CorPokemon>(entity =>
-        {
-            entity.Property(c => c.Id).ValueGeneratedOnAdd();
-            entity.Property(c => c.Cor).IsRequired().HasMaxLength(50);
-        });
-
-        modelBuilder.Entity<CorPokemon>()
-            .HasMany(c => c.Pokemons)
-            .WithOne(p => p.CorPokemon)
-            .HasForeignKey(p => p.CorPokemonId)
-            .OnDelete(DeleteBehavior.Cascade);
     }
 }

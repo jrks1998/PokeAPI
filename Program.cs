@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using PokeAPI.Repository;
+using Repository;
+using Service;
 
 var builder = WebApplication.CreateBuilder(args);
 var user = Environment.GetEnvironmentVariable("DB_USER");
@@ -13,9 +14,8 @@ builder.Services.AddDbContext<PokemonRepository>(options =>
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddDbContext<PokemonRepository>(options =>
-    options.UseNpgsql(connectionString));
 builder.Services.AddControllers();
+builder.Services.AddScoped<PokemonService>();
 
 builder.Services.AddSwaggerGen(c =>
 {

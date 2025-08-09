@@ -3,7 +3,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace Migrations
+namespace pokeApi.Migrations
 {
     /// <inheritdoc />
     public partial class Initial : Migration
@@ -31,7 +31,8 @@ namespace Migrations
                     pokemon_id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
                     name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
-                    color_id = table.Column<int>(type: "integer", nullable: false)
+                    color_id = table.Column<int>(type: "integer", nullable: false),
+                    nome_cor = table.Column<string>(type: "text", nullable: false)
                 },
                 constraints: table =>
                 {

@@ -1,4 +1,7 @@
-﻿namespace Service;
+﻿using System.Net;
+using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
+
+namespace Service;
 
 public class ConsomeApi
 {
@@ -25,6 +28,7 @@ public class ConsomeApi
         try
         {
             HttpClient client = new HttpClient();
+            client.DefaultRequestHeaders.Add("Connection", "keep-alive");
             var resp = await client.GetAsync(urlBase + "pokemon-species/" + nome);
             resp.EnsureSuccessStatusCode();
             string json = await resp.Content.ReadAsStringAsync();

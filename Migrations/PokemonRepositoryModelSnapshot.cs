@@ -3,11 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
-using PokeAPI.Repository;
+using Repository;
 
 #nullable disable
 
-namespace Migrations
+namespace pokeApi.Migrations
 {
     [DbContext(typeof(PokemonRepository))]
     partial class PokemonRepositoryModelSnapshot : ModelSnapshot
@@ -21,7 +21,7 @@ namespace Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
-            modelBuilder.Entity("PokeAPI.Pokemon.CorPokemon", b =>
+            modelBuilder.Entity("Pokemon.CorPokemon", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -41,7 +41,7 @@ namespace Migrations
                     b.ToTable("pokemon_colors");
                 });
 
-            modelBuilder.Entity("PokeAPI.Pokemon.Pokemon", b =>
+            modelBuilder.Entity("Pokemon.Pokemon", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -60,6 +60,11 @@ namespace Migrations
                         .HasColumnType("character varying(100)")
                         .HasColumnName("name");
 
+                    b.Property<string>("NomeCor")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("nome_cor");
+
                     b.HasKey("Id");
 
                     b.HasIndex("CorPokemonId");
@@ -67,18 +72,18 @@ namespace Migrations
                     b.ToTable("pokemons");
                 });
 
-            modelBuilder.Entity("PokeAPI.Pokemon.Pokemon", b =>
+            modelBuilder.Entity("Pokemon.Pokemon", b =>
                 {
-                    b.HasOne("PokeAPI.Pokemon.CorPokemon", "CorPokemon")
+                    b.HasOne("Pokemon.CorPokemon", "Cor")
                         .WithMany("Pokemons")
                         .HasForeignKey("CorPokemonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("CorPokemon");
+                    b.Navigation("Cor");
                 });
 
-            modelBuilder.Entity("PokeAPI.Pokemon.CorPokemon", b =>
+            modelBuilder.Entity("Pokemon.CorPokemon", b =>
                 {
                     b.Navigation("Pokemons");
                 });

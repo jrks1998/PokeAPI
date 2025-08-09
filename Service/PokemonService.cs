@@ -7,7 +7,6 @@ namespace Service;
 public class PokemonService
 {
     private ConsomeApi _consomeApi = new ConsomeApi();
-    private List<PokemonClass> listaDadosCadastroPokemon = new List<PokemonClass>();
 
     public async Task<List<DadosPokemon>> obterNomesPokemons()
     {
@@ -36,6 +35,7 @@ public class PokemonService
 
     public async Task<string> agruparPorCor()
     {
+        List<PokemonClass> listaDadosCadastroPokemon = new List<PokemonClass>();
         var nomePokemons = await obterNomesPokemons();
         foreach (var nomePokemon in nomePokemons)
         {
@@ -43,19 +43,39 @@ public class PokemonService
             string corPokemon = await obterCorPokemon(nome);
             CorPokemon cor = new CorPokemon(corPokemon);
             PokemonClass pokemon = new PokemonClass(nome, cor);
-            Console.WriteLine($"inserindo Pokemon: {pokemon.Nome} com cor: {pokemon.CorPokemon.Cor}");
             listaDadosCadastroPokemon.Add(pokemon);
         }
 
-        var agrupado = listaDadosCadastroPokemon
-            .GroupBy(p => p.CorPokemon.Cor)
-            .ToDictionary(
-                grupo => grupo.Key,
-                grupo => grupo.Select(p => p.Nome).ToList()
-            );
-        return JsonSerializer.Serialize(agrupado, new JsonSerializerOptions
+        Dictionary<string, List<string>> dictionaryAgrupadoPorCor = agruparPorCorDictionary(listaDadosCadastroPokemon);
+        JsonSerializerOptions options = new JsonSerializerOptions
         {
             WriteIndented = true
-        });
+        };
+
+        string jsonAgrupadoPorCor = JsonSerializer.Serialize(dictionaryAgrupadoPorCor, options);
+        return jsonAgrupadoPorCor;
+    }
+
+    public DadosCadastroPokemon agruparPorCorDictionary(List<PokemonClass> listaPokemons)
+    {
+        Dictionary<string, List<string>> agrupadoPorCor = listaPokemons
+            .GroupBy(lp => lp.Cor.Cor)
+            .ToDictionary(
+                grupo => grupo.Key,
+                grupo => grupo.Select(lp => lp.Nome).ToList()
+            );
+
+        return new DadosCadastroPokemon(agrupadoPorCor);
+    }
+
+    public string agruparPorCorString(DadosCadastroPokemon dados)
+    {
+        JsonSerializerOptions options = new JsonSerializerOptions
+        {
+            WriteIndented = true
+        };
+        string jsonAgrupadoPorCorString = JsonSerializer.Serialize(dados, options);
+
+        return jsonAgrupadoPorCorString;
     }
 }
