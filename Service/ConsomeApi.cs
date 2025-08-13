@@ -1,7 +1,4 @@
-﻿using System.Net;
-using Microsoft.AspNetCore.Mvc.RazorPages.Infrastructure;
-
-namespace Service;
+﻿namespace Service;
 
 public class ConsomeApi
 {

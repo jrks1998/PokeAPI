@@ -1,12 +1,21 @@
 ﻿using System.Text.Json;
-using PokemonClass = Pokemon.Pokemon;
-using Pokemon;
+using Models;
+using DTOs;
+using Repository;
 
 namespace Service;
 
 public class PokemonService
 {
     private ConsomeApi _consomeApi = new ConsomeApi();
+    private readonly CorPokemonRepository _corRepository;
+    private readonly PokemonRepository _pokemonRepository;
+
+    public PokemonService(CorPokemonRepository corRepository, PokemonRepository pokemonRepository)
+    {
+        _corRepository = corRepository;
+        _pokemonRepository = pokemonRepository;
+    }
 
     public async Task<List<DadosPokemon>> obterNomesPokemons()
     {
@@ -33,42 +42,26 @@ public class PokemonService
         return null;
     }
 
-    public async Task<string> agruparPorCor()
+    public async Task<List<Pokemon>> listaPokemon()
     {
-        List<PokemonClass> listaDadosCadastroPokemon = new List<PokemonClass>();
+        int i = 1;
+        List<Pokemon> listaDadosCadastroPokemon = new List<Pokemon>();
         var nomePokemons = await obterNomesPokemons();
         foreach (var nomePokemon in nomePokemons)
         {
             string nome = nomePokemon.Nome;
             string corPokemon = await obterCorPokemon(nome);
             CorPokemon cor = new CorPokemon(corPokemon);
-            PokemonClass pokemon = new PokemonClass(nome, cor);
+            Pokemon pokemon = new Pokemon(nome, cor);
             listaDadosCadastroPokemon.Add(pokemon);
+            Console.WriteLine($"{i} - {pokemon.Nome}, {pokemon.Cor.Cor}");
+            i += 1;
         }
+        Console.WriteLine("finalizado");
 
-        Dictionary<string, List<string>> dictionaryAgrupadoPorCor = agruparPorCorDictionary(listaDadosCadastroPokemon);
-        JsonSerializerOptions options = new JsonSerializerOptions
-        {
-            WriteIndented = true
-        };
-
-        string jsonAgrupadoPorCor = JsonSerializer.Serialize(dictionaryAgrupadoPorCor, options);
-        return jsonAgrupadoPorCor;
+        return listaDadosCadastroPokemon;
     }
-
-    public DadosCadastroPokemon agruparPorCorDictionary(List<PokemonClass> listaPokemons)
-    {
-        Dictionary<string, List<string>> agrupadoPorCor = listaPokemons
-            .GroupBy(lp => lp.Cor.Cor)
-            .ToDictionary(
-                grupo => grupo.Key,
-                grupo => grupo.Select(lp => lp.Nome).ToList()
-            );
-
-        return new DadosCadastroPokemon(agrupadoPorCor);
-    }
-
-    public string agruparPorCorString(DadosCadastroPokemon dados)
+    public string stringAgrupadoPorCor(Dictionary<string, List<string>> dados)
     {
         JsonSerializerOptions options = new JsonSerializerOptions
         {
@@ -77,5 +70,68 @@ public class PokemonService
         string jsonAgrupadoPorCorString = JsonSerializer.Serialize(dados, options);
 
         return jsonAgrupadoPorCorString;
+    }
+
+    public Dictionary<string, List<string>> corPokemonAgruparPorCor(List<CorPokemonDTO> corPokemonDTOLista)
+    {
+        Dictionary<string, List<string>> agrupado = corPokemonDTOLista
+            .GroupBy(cp => cp.cor)
+            .ToDictionary(
+                grupo => grupo.Key,
+                grupo => grupo.SelectMany(cp => cp.pokemons).ToList()
+            );
+
+        return agrupado;
+    }
+
+    public Dictionary<string, List<string>> pokemonAgruparPorCor(List<Pokemon> pokemonLista)
+    {
+        Dictionary<string, List<string>> agrupado = pokemonLista
+            .GroupBy(p => p.Cor.Cor)
+            .ToDictionary(
+                grupo => grupo.Key,
+                grupo => grupo.Select(cp => cp.Nome).ToList()
+            );
+
+        return agrupado;
+    }
+
+    private CorPokemon verificarPelaCorCorPokemonSalva(string cor)
+    {
+        return _corRepository.ObterCorPeloNome(cor);
+    }
+
+    private Pokemon verificarPeloNomePokemonSalvo(string nome)
+    {
+        return _pokemonRepository.ObterPokemonPeloNome(nome);
+    }
+
+    public List<Pokemon> CadastrarPokemons(Dictionary<string, List<string>> dadosPokemons)
+    {
+        List<Pokemon> pokemonsCadastrados = new List<Pokemon>();
+
+        foreach (var dadosPokemon in dadosPokemons)
+        {
+            string cor = dadosPokemon.Key;
+            List<string> nomes = dadosPokemon.Value;
+            CorPokemon corPokemon = verificarPelaCorCorPokemonSalva(cor);
+            if (corPokemon == null)
+            {
+                corPokemon = new CorPokemon(cor);
+                _corRepository.SalvarCor(corPokemon);
+            }
+            foreach (string nome in nomes)
+            {
+                Pokemon pokemon = verificarPeloNomePokemonSalvo(nome);
+                if (pokemon == null)
+                {
+                    pokemon = new Pokemon(nome, corPokemon);
+                    _pokemonRepository.SalvarPokemon(pokemon);
+                }
+                pokemonsCadastrados.Add(pokemon);
+            }
+        }
+
+        return pokemonsCadastrados;
     }
 }

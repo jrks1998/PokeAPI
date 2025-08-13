@@ -1,21 +1,30 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
-using Repository;
+using Data;
 using Service;
+using Serilog;
+using Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 var user = Environment.GetEnvironmentVariable("DB_USER");
 var pass = Environment.GetEnvironmentVariable("DB_PASS");
 var db = Environment.GetEnvironmentVariable("DB_NAME");
 var connectionString = $"Host=localhost;Port=50001;Database={db};Username={user};Password={pass};";
-builder.Services.AddDbContext<PokemonRepository>(options =>
+builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Information()
+    .WriteTo.Console()
+    .CreateLogger();
+builder.Host.UseSerilog();
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
 builder.Services.AddScoped<PokemonService>();
+builder.Services.AddScoped<CorPokemonRepository>();
+builder.Services.AddScoped<PokemonRepository>();
 
 builder.Services.AddSwaggerGen(c =>
 {

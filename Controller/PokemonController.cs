@@ -1,11 +1,10 @@
-﻿using Repository;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Service;
-using PokemonClass = Pokemon.Pokemon;
-using Pokemon;
-using System.Text.Json;
-// using Validacoes;
+using DTOs;
+using Models;
+using Data;
+using Microsoft.EntityFrameworkCore.Storage.ValueConversion.Internal;
 
 namespace Controller;
 
@@ -13,71 +12,50 @@ namespace Controller;
 [Route("pokemons")]
 public class PokemonController : ControllerBase
 {
-    private readonly PokemonRepository _dbContext;
+    private readonly AppDbContext _dbContext;
     private readonly PokemonService _pokemonService;
+    private readonly ILogger<PokemonController> _logger;
 
-    public PokemonController(PokemonRepository dbContext, PokemonService pokemonService)
+    public PokemonController(AppDbContext dbContext, PokemonService pokemonService, ILogger<PokemonController> logger)
     {
         _dbContext = dbContext;
         _pokemonService = pokemonService;
+        _logger = logger;
     }
 
     [HttpPost("save")]
-    public async Task<DadosRetornoPokemonsCadastrados> cadastrarPokemon([FromBody] DadosCadastroPokemon dadosPokemons)
+    public async Task<DadosRetornoPokemonsCadastrados> cadastrarPokemon([FromBody] Dictionary<string, List<string>> dadosPokemons)
     {
-        List<PokemonClass> pokemonsCadastrados = new List<PokemonClass>();
-        foreach (var dadosPokemonPorCor in dadosPokemons)
-        {
-            string nomeCor = dadosPokemonPorCor.Key;
-            List<string> nomes = dadosPokemonPorCor.Value;
-            CorPokemon cor;
-            CorPokemon? verificaCor = await _dbContext.Cores
-                .FirstOrDefaultAsync(c => c.Cor.ToUpper() == nomeCor.ToUpper());
-            Console.WriteLine(verificaCor);
-            if (verificaCor == null)
-            {
-                cor = new CorPokemon(nomeCor); ;
-                Console.WriteLine("cadastrando nova cor " + cor.Cor);
-                _dbContext.Cores.Add(cor);
-            }
-            else
-            {
-                cor = verificaCor;
-            }
-            foreach (var nome in nomes)
-            {
-                PokemonClass pokemon = new PokemonClass(nome, cor);
-                PokemonClass? verificaPokemon = await _dbContext.Pokemons
-                    .FirstOrDefaultAsync(p => p.Nome.ToUpper() == nome.ToUpper());
-                if (verificaPokemon == null)
-                {
-                    _dbContext.Pokemons.Add(pokemon);
-                    pokemonsCadastrados.Add(pokemon);
-                }
-            }
-        }
-        await _dbContext.SaveChangesAsync();
-        DadosCadastroPokemon agrupado = _pokemonService.agruparPorCorDictionary(pokemonsCadastrados);
+        List<Pokemon> pokemonsCadastrados = _pokemonService.CadastrarPokemons(dadosPokemons);
+        Dictionary<string, List<string>> agrupado = _pokemonService.pokemonAgruparPorCor(pokemonsCadastrados);
 
-        return new DadosRetornoPokemonsCadastrados("Pokemons cadastrados com sucesso!", agrupado);
+        DadosRetornoPokemonsCadastrados retornoPokemonsCadastrados = new DadosRetornoPokemonsCadastrados("Pokemons cadastrados com sucesso!", agrupado);
+        return retornoPokemonsCadastrados;
     }
 
     [HttpGet("group-by-color")]
     public async Task<string> agruparPorCor()
     {
-        string json = await _pokemonService.agruparPorCor();
-        return json;
+        List<Pokemon> pokemons = await _pokemonService.listaPokemon();
+        Dictionary<string, List<string>> dictionaryPokemon = _pokemonService.pokemonAgruparPorCor(pokemons);
+        string jsonAgrupadoPorCor = _pokemonService.stringAgrupadoPorCor(dictionaryPokemon);
+        _logger.LogInformation("retornando dados");
+        return jsonAgrupadoPorCor;
     }
 
     [HttpGet("from-db")]
-    public async Task<string> consultarPokemonsSalvos()
+    public string consultarPokemonsSalvos()
     {
-        List<PokemonClass> pokemonsSalvos = await _dbContext.Pokemons
-            .ToListAsync();
-        DadosCadastroPokemon dictionaryPokemonsCadastrados = _pokemonService.agruparPorCorDictionary(pokemonsSalvos);
+        List<CorPokemonDTO> coresComPokemons = _dbContext.Cores
+            .Include(c => c.Pokemons)
+            .Select(c => new CorPokemonDTO
+            {
+                cor = c.Cor,
+                pokemons = c.Pokemons.Select(p => p.Nome).ToList()
+            }).ToList();
 
-        string jsonPokemonsCadastrados = _pokemonService.agruparPorCorString(dictionaryPokemonsCadastrados);
-
-        return jsonPokemonsCadastrados;
+        Dictionary<string, List<string>> dictionaryCorPokemon = _pokemonService.corPokemonAgruparPorCor(coresComPokemons);
+        string jsonAgrupadoPorCor = _pokemonService.stringAgrupadoPorCor(dictionaryCorPokemon);
+        return jsonAgrupadoPorCor;
     }
 }

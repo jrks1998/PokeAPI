@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Pokemon;
+namespace Models;
 
 [Table("pokemons")]
 public class Pokemon
@@ -12,9 +12,9 @@ public class Pokemon
     public int Id { get; init; }
     [Column("name")]
     public string Nome { get; set; }
-    public CorPokemon Cor { get; set; }
     [Column("color_id")]
     public int CorPokemonId { get; set; }
+    public CorPokemon Cor { get; set; }
 
     Pokemon() { }
 

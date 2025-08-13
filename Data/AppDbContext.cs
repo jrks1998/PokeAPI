@@ -1,15 +1,14 @@
 using Microsoft.EntityFrameworkCore;
-using Pokemon;
-using PokemonClass = Pokemon.Pokemon;
+using Models;
 
-namespace Repository;
+namespace Data;
 
-public class PokemonRepository : DbContext
+public class AppDbContext : DbContext
 {
-    public DbSet<PokemonClass> Pokemons { get; set; }
+    public DbSet<Pokemon> Pokemons { get; set; }
     public DbSet<CorPokemon> Cores { get; set;  }
 
-    public PokemonRepository(DbContextOptions<PokemonRepository> options) : base(options) { }
+    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options) { }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -19,15 +18,17 @@ public class PokemonRepository : DbContext
             entity.Property(c => c.Cor).IsRequired().HasMaxLength(50);
             entity.HasMany(c => c.Pokemons)
                 .WithOne(p => p.Cor)
-                .HasForeignKey(p => p.CorPokemonId)
-                .OnDelete(DeleteBehavior.Cascade);
+                .HasForeignKey(p => p.CorPokemonId);
         });
 
-         modelBuilder.Entity<PokemonClass>(entity =>
+         modelBuilder.Entity<Pokemon>(entity =>
         {
             entity.Property(p => p.Id).ValueGeneratedOnAdd();
             entity.Property(p => p.Nome).IsRequired().HasMaxLength(100);
             entity.Property(p => p.CorPokemonId).IsRequired();
+            entity.HasOne(p => p.Cor)
+                .WithMany(c => c.Pokemons)
+                .HasForeignKey(p => p.CorPokemonId);
         });
     }
 }
