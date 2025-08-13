@@ -1,1 +1,0 @@
-psql -U postgres -h localhost -p 50001 -d pokeapi
