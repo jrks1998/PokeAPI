@@ -7,12 +7,13 @@ namespace Service;
 
 public class PokemonService
 {
-    private ConsomeApi _consomeApi = new ConsomeApi();
-    private readonly CorPokemonRepository _corRepository;
-    private readonly PokemonRepository _pokemonRepository;
+    private IConsomeApi _consomeApi;
+    private readonly ICorPokemonRepository _corRepository;
+    private readonly IPokemonRepository _pokemonRepository;
 
-    public PokemonService(CorPokemonRepository corRepository, PokemonRepository pokemonRepository)
+    public PokemonService(IConsomeApi consomeApi, ICorPokemonRepository corRepository, IPokemonRepository pokemonRepository)
     {
+        _consomeApi = consomeApi;
         _corRepository = corRepository;
         _pokemonRepository = pokemonRepository;
     }

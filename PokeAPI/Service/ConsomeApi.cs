@@ -1,6 +1,6 @@
 ﻿namespace Service;
 
-public class ConsomeApi
+public class ConsomeApi : IConsomeApi
 {
     private string urlBase = "https://pokeapi.co/api/v2/";
     
@@ -9,7 +9,7 @@ public class ConsomeApi
         try
         {
             HttpClient client = new HttpClient();
-            HttpResponseMessage resp = await client.GetAsync(urlBase + "pokemon?limit=100");
+            HttpResponseMessage resp = await client.GetAsync(urlBase + "pokemon?limit=10");
             resp.EnsureSuccessStatusCode();
             string json = await resp.Content.ReadAsStringAsync();
             return json;

@@ -23,8 +23,9 @@ builder.Host.UseSerilog();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
 builder.Services.AddScoped<PokemonService>();
-builder.Services.AddScoped<CorPokemonRepository>();
-builder.Services.AddScoped<PokemonRepository>();
+builder.Services.AddScoped<ICorPokemonRepository, CorPokemonRepository>();
+builder.Services.AddScoped<IPokemonRepository, PokemonRepository>();
+builder.Services.AddScoped<IConsomeApi, ConsomeApi>();
 
 builder.Services.AddSwaggerGen(c =>
 {

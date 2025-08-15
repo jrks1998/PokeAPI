@@ -1,6 +1,6 @@
 ﻿# Arquivos de build e compilação
-bin/
-obj/
+PokeAPI/bin/
+PokeAPI/obj/
 *.csproj.user
 *.user
 *.suo
@@ -105,3 +105,4 @@ docker-compose.override.yml
 *.resharper
 *.DotSettings
 *.DotSettings.user
+*conectabanco.bat

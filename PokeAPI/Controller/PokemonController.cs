@@ -13,10 +13,10 @@ namespace Controller;
 public class PokemonController : ControllerBase
 {
     private readonly AppDbContext _dbContext;
-    private readonly PokemonService _pokemonService;
+    private readonly IPokemonService _pokemonService;
     private readonly ILogger<PokemonController> _logger;
 
-    public PokemonController(AppDbContext dbContext, PokemonService pokemonService, ILogger<PokemonController> logger)
+    public PokemonController(AppDbContext dbContext, IPokemonService pokemonService, ILogger<PokemonController> logger)
     {
         _dbContext = dbContext;
         _pokemonService = pokemonService;
@@ -39,7 +39,6 @@ public class PokemonController : ControllerBase
         List<Pokemon> pokemons = await _pokemonService.listaPokemon();
         Dictionary<string, List<string>> dictionaryPokemon = _pokemonService.pokemonAgruparPorCor(pokemons);
         string jsonAgrupadoPorCor = _pokemonService.stringAgrupadoPorCor(dictionaryPokemon);
-        _logger.LogInformation("retornando dados");
         return jsonAgrupadoPorCor;
     }
 
