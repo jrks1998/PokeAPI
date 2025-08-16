@@ -5,14 +5,14 @@ namespace Service;
 
 public interface IPokemonService
 {
-    Task<List<DadosPokemon>> obterNomesPokemons();
-    Task<string> obterCorPokemon(string nome);
-    Task<List<Pokemon>> listaPokemon();
-    string stringAgrupadoPorCor(Dictionary<string, List<string>> dados);
-    Dictionary<string, List<string>> corPokemonAgruparPorCor(List<CorPokemonDTO> corPokemonDTOLista);
-    Dictionary<string, List<string>> pokemonAgruparPorCor(List<Pokemon> pokemonLista);
-    CorPokemon verificarPelaCorCorPokemonSalva(string cor);
-    Pokemon verificarPeloNomePokemonSalvo(string nome);
+    Task<List<DadosPokemon>> ObterNomesPokemons();
+    Task<string> ObterCorPokemon(string nome);
+    Task<List<Pokemon>> ListaPokemon();
+    string StringAgrupadoPorCor(Dictionary<string, List<string>> dados);
+    Dictionary<string, List<string>> CorPokemonAgruparPorCor(List<CorPokemonDTO> corPokemonDTOLista);
+    Dictionary<string, List<string>> PokemonAgruparPorCor(List<Pokemon> pokemonLista);
+    CorPokemon VerificarPelaCorCorPokemonSalva(string cor);
+    Pokemon VerificarPeloNomePokemonSalvo(string nome);
     List<Pokemon> CadastrarPokemons(Dictionary<string, List<string>> dadosPokemons);
     List<CorPokemonDTO> ObterCoresComPokemons();
 }

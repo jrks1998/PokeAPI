@@ -22,9 +22,9 @@ public class PokemonService
         _dbContext = dbContext;
     }
 
-    public async Task<List<DadosPokemon>> obterNomesPokemons()
+    public async Task<List<DadosPokemon>> ObterNomesPokemons()
     {
-        var json = await _consomeApi.obterDadosPokemon();
+        var json = await _consomeApi.ObterDadosPokemon();
         if (json != null)
         {
             PokemonList listaPokemons = JsonSerializer.Deserialize<PokemonList>(json);
@@ -34,9 +34,9 @@ public class PokemonService
         return null;
     }
 
-    public async Task<string> obterCorPokemon(string nome)
+    public async Task<string> ObterCorPokemon(string nome)
     {
-        var json = await _consomeApi.obterDadosEspecies(nome);
+        var json = await _consomeApi.ObterDadosEspecies(nome);
         if (json != null)
         {
             DadosCorPokemon corPokemon = JsonSerializer.Deserialize<PokemonSpecie>(json).Color;
@@ -47,15 +47,15 @@ public class PokemonService
         return null;
     }
 
-    public async Task<List<Pokemon>> listaPokemon()
+    public async Task<List<Pokemon>> ListaPokemon()
     {
         int i = 1;
         List<Pokemon> listaDadosCadastroPokemon = new List<Pokemon>();
-        var nomePokemons = await obterNomesPokemons();
+        var nomePokemons = await ObterNomesPokemons();
         foreach (var nomePokemon in nomePokemons)
         {
             string nome = nomePokemon.Nome;
-            string corPokemon = await obterCorPokemon(nome);
+            string corPokemon = await ObterCorPokemon(nome);
             CorPokemon cor = new CorPokemon(corPokemon);
             Pokemon pokemon = new Pokemon(nome, cor);
             listaDadosCadastroPokemon.Add(pokemon);
@@ -66,7 +66,7 @@ public class PokemonService
 
         return listaDadosCadastroPokemon;
     }
-    public string stringAgrupadoPorCor(Dictionary<string, List<string>> dados)
+    public string StringAgrupadoPorCor(Dictionary<string, List<string>> dados)
     {
         JsonSerializerOptions options = new JsonSerializerOptions
         {
@@ -77,7 +77,7 @@ public class PokemonService
         return jsonAgrupadoPorCorString;
     }
 
-    public Dictionary<string, List<string>> corPokemonAgruparPorCor(List<CorPokemonDTO> corPokemonDTOLista)
+    public Dictionary<string, List<string>> CorPokemonAgruparPorCor(List<CorPokemonDTO> corPokemonDTOLista)
     {
         Dictionary<string, List<string>> agrupado = corPokemonDTOLista
             .GroupBy(cp => cp.cor)
@@ -89,7 +89,7 @@ public class PokemonService
         return agrupado;
     }
 
-    public Dictionary<string, List<string>> pokemonAgruparPorCor(List<Pokemon> pokemonLista)
+    public Dictionary<string, List<string>> PokemonAgruparPorCor(List<Pokemon> pokemonLista)
     {
         Dictionary<string, List<string>> agrupado = pokemonLista
             .GroupBy(p => p.Cor.Cor)
@@ -101,12 +101,12 @@ public class PokemonService
         return agrupado;
     }
 
-    private CorPokemon verificarPelaCorCorPokemonSalva(string cor)
+    private CorPokemon VerificarPelaCorCorPokemonSalva(string cor)
     {
         return _corRepository.ObterCorPeloNome(cor);
     }
 
-    private Pokemon verificarPeloNomePokemonSalvo(string nome)
+    private Pokemon VerificarPeloNomePokemonSalvo(string nome)
     {
         return _pokemonRepository.ObterPokemonPeloNome(nome);
     }
@@ -119,7 +119,7 @@ public class PokemonService
         {
             string cor = dadosPokemon.Key;
             List<string> nomes = dadosPokemon.Value;
-            CorPokemon corPokemon = verificarPelaCorCorPokemonSalva(cor);
+            CorPokemon corPokemon = VerificarPelaCorCorPokemonSalva(cor);
             if (corPokemon == null)
             {
                 corPokemon = new CorPokemon(cor);
@@ -127,7 +127,7 @@ public class PokemonService
             }
             foreach (string nome in nomes)
             {
-                Pokemon pokemon = verificarPeloNomePokemonSalvo(nome);
+                Pokemon pokemon = VerificarPeloNomePokemonSalvo(nome);
                 if (pokemon == null)
                 {
                     pokemon = new Pokemon(nome, corPokemon);

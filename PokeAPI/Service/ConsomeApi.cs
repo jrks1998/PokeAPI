@@ -3,15 +3,21 @@
 public class ConsomeApi : IConsomeApi
 {
     private string urlBase = "https://pokeapi.co/api/v2/";
+    private readonly HttpClient _client;
+
+    public ConsomeApi(HttpClient client)
+    {
+        _client = client;
+        _client.DefaultRequestHeaders.Add("Connection", "keep-alive");
+    }
     
-    public async Task<string> obterDadosPokemon()
+    public string ObterDadosPokemon()
     {
         try
         {
-            HttpClient client = new HttpClient();
-            HttpResponseMessage resp = await client.GetAsync(urlBase + "pokemon?limit=10");
+            HttpResponseMessage resp = _client.Get(urlBase + "pokemon?limit=10");
             resp.EnsureSuccessStatusCode();
-            string json = await resp.Content.ReadAsStringAsync();
+            string json = await resp.Content.ReadAsString();
             return json;
         }
         catch (HttpRequestException e)
@@ -20,15 +26,13 @@ public class ConsomeApi : IConsomeApi
         }
     }
 
-    public async Task<string> obterDadosEspecies(string nome)
+    public string ObterDadosEspecies(string nome)
     {
         try
         {
-            HttpClient client = new HttpClient();
-            client.DefaultRequestHeaders.Add("Connection", "keep-alive");
-            var resp = await client.GetAsync(urlBase + "pokemon-species/" + nome);
+            var resp = _client.Get(urlBase + "pokemon-species/" + nome);
             resp.EnsureSuccessStatusCode();
-            string json = await resp.Content.ReadAsStringAsync();
+            string json = resp.Content.ReadAsString();
             return json;
         }
         catch (HttpRequestException e)
