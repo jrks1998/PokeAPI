@@ -12,7 +12,7 @@ public class CorPokemon
     public int Id { get; init; }
     [Column("color_name")]
     public string Cor { get; set; }
-    public List<Pokemon> Pokemons { get; set; }
+    public List<Pokemon> Pokemons { get; set; } = new List<Pokemon>();
 
     CorPokemon() { }
 

@@ -45,14 +45,7 @@ public class PokemonController : ControllerBase
     [HttpGet("from-db")]
     public string consultarPokemonsSalvos()
     {
-        List<CorPokemonDTO> coresComPokemons = _dbContext.Cores
-            .Include(c => c.Pokemons)
-            .Select(c => new CorPokemonDTO
-            {
-                cor = c.Cor,
-                pokemons = c.Pokemons.Select(p => p.Nome).ToList()
-            }).ToList();
-
+        List<CorPokemonDTO> coresComPokemons = _pokemonService.ObterCoresComPokemons();
         Dictionary<string, List<string>> dictionaryCorPokemon = _pokemonService.corPokemonAgruparPorCor(coresComPokemons);
         string jsonAgrupadoPorCor = _pokemonService.stringAgrupadoPorCor(dictionaryCorPokemon);
         return jsonAgrupadoPorCor;

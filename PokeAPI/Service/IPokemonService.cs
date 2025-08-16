@@ -14,4 +14,5 @@ public interface IPokemonService
     CorPokemon verificarPelaCorCorPokemonSalva(string cor);
     Pokemon verificarPeloNomePokemonSalvo(string nome);
     List<Pokemon> CadastrarPokemons(Dictionary<string, List<string>> dadosPokemons);
+    List<CorPokemonDTO> ObterCoresComPokemons();
 }

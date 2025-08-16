@@ -2,6 +2,8 @@
 using Models;
 using DTOs;
 using Repository;
+using Data;
+using Microsoft.EntityFrameworkCore;
 
 namespace Service;
 
@@ -10,12 +12,14 @@ public class PokemonService
     private IConsomeApi _consomeApi;
     private readonly ICorPokemonRepository _corRepository;
     private readonly IPokemonRepository _pokemonRepository;
+    private readonly AppDbContext _dbContext;
 
-    public PokemonService(IConsomeApi consomeApi, ICorPokemonRepository corRepository, IPokemonRepository pokemonRepository)
+    public PokemonService(IConsomeApi consomeApi, ICorPokemonRepository corRepository, IPokemonRepository pokemonRepository, AppDbContext dbContext)
     {
         _consomeApi = consomeApi;
         _corRepository = corRepository;
         _pokemonRepository = pokemonRepository;
+        _dbContext = dbContext;
     }
 
     public async Task<List<DadosPokemon>> obterNomesPokemons()
@@ -134,5 +138,18 @@ public class PokemonService
         }
 
         return pokemonsCadastrados;
+    }
+
+    public List<CorPokemonDTO> ObterCoresComPokemons()
+    {
+        List<CorPokemonDTO> coresComPokemons = _dbContext.Cores
+            .Include(c => c.Pokemons)
+            .Select(c => new CorPokemonDTO
+            {
+                cor = c.Cor,
+                pokemons = c.Pokemons.Select(p => p.Nome).ToList()
+            }).ToList();
+
+        return coresComPokemons;
     }
 }

@@ -26,6 +26,7 @@ builder.Services.AddScoped<PokemonService>();
 builder.Services.AddScoped<ICorPokemonRepository, CorPokemonRepository>();
 builder.Services.AddScoped<IPokemonRepository, PokemonRepository>();
 builder.Services.AddScoped<IConsomeApi, ConsomeApi>();
+builder.Services.AddScoped<AppDbContext>();
 
 builder.Services.AddSwaggerGen(c =>
 {

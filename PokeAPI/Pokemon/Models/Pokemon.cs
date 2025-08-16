@@ -14,7 +14,7 @@ public class Pokemon
     public string Nome { get; set; }
     [Column("color_id")]
     public int CorPokemonId { get; set; }
-    public CorPokemon Cor { get; set; }
+    public CorPokemon Cor  { get; set; }
 
     Pokemon() { }
 
