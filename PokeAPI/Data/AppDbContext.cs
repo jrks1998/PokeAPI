@@ -24,7 +24,7 @@ public class AppDbContext : DbContext
          modelBuilder.Entity<Pokemon>(entity =>
         {
             entity.Property(p => p.Id).ValueGeneratedOnAdd();
-            entity.Property(p => p.Nome).IsRequired().HasMaxLength(100);
+            entity.Property(p => p.Nome).IsRequired().HasMaxLength(50);
             entity.Property(p => p.CorPokemonId).IsRequired();
             entity.HasOne(p => p.Cor)
                 .WithMany(c => c.Pokemons)

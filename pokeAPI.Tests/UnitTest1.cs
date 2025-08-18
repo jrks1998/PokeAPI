@@ -63,6 +63,7 @@ public class UnitTest1
 
         string resultado = await controller.AgruparPorCor();
 
+        Assert.NotNull(resultado);
         Assert.Equal(fakeJson, resultado);
     }
 
@@ -183,7 +184,7 @@ public class UnitTest1
             .Returns(fakeDictionary);
         DadosRetornoPokemonsCadastrados fakeDadosRetorno = new DadosRetornoPokemonsCadastrados("Pokemons cadastrados com sucesso!", fakeDictionary);
 
-        DadosRetornoPokemonsCadastrados resultado = await controller.cadastrarPokemon(fakeDictionary);
+        DadosRetornoPokemonsCadastrados resultado = await controller.CadastrarPokemon(fakeDictionary);
 
         Assert.Equal(resultado, fakeDadosRetorno);
     }

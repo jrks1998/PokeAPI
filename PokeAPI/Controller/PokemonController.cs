@@ -24,31 +24,37 @@ public class PokemonController : ControllerBase
     }
 
     [HttpPost("save")]
-    public async Task<DadosRetornoPokemonsCadastrados> CadastrarPokemon([FromBody] Dictionary<string, List<string>> dadosPokemons)
+    public ActionResult<DadosRetornoPokemonsCadastrados> CadastrarPokemon([FromBody] Dictionary<string, List<string>> dadosPokemons)
     {
         List<Pokemon> pokemonsCadastrados = _pokemonService.CadastrarPokemons(dadosPokemons);
         Dictionary<string, List<string>> agrupado = _pokemonService.PokemonAgruparPorCor(pokemonsCadastrados);
 
         DadosRetornoPokemonsCadastrados retornoPokemonsCadastrados = new DadosRetornoPokemonsCadastrados("Pokemons cadastrados com sucesso!", agrupado);
-        return retornoPokemonsCadastrados;
+        return Ok(retornoPokemonsCadastrados);
     }
 
     [HttpGet("group-by-color")]
-    public async Task<string> AgruparPorCor()
+    public async Task<ActionResult<Dictionary<string, List<string>>>> AgruparPorCor()
     {
         List<Pokemon> pokemons = await _pokemonService.ListaPokemon();
+        if (pokemons == null || pokemons.Count == 0)
+        {
+            return NotFound("Nenhum Pokemon encontrado.");
+        }
         Dictionary<string, List<string>> dictionaryPokemon = _pokemonService.PokemonAgruparPorCor(pokemons);
-        string jsonAgrupadoPorCor = _pokemonService.StringAgrupadoPorCor(dictionaryPokemon);
-        return jsonAgrupadoPorCor;
+        return Ok(dictionaryPokemon);
     }
 
     [HttpGet("from-db")]
-    public string ConsultarPokemonsSalvos()
+    public ActionResult<Dictionary<string, List<string>>> ConsultarPokemonsSalvos()
     {
         List<CorPokemonDTO> coresComPokemons = _pokemonService.ObterCoresComPokemons();
+        if (coresComPokemons.Count == 0)
+        {
+            return NotFound("Nenhum pokemon cadastrado no banco de dados");
+        }
         Dictionary<string, List<string>> dictionaryCorPokemon = _pokemonService.CorPokemonAgruparPorCor(coresComPokemons);
 
-        string jsonAgrupadoPorCor = _pokemonService.StringAgrupadoPorCor(dictionaryCorPokemon);
-        return jsonAgrupadoPorCor;
+        return Ok(dictionaryCorPokemon);
     }
 }

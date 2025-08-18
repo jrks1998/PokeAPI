@@ -22,11 +22,12 @@ builder.Host.UseSerilog();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddControllers();
-builder.Services.AddScoped<PokemonService>();
+builder.Services.AddScoped<IPokemonService, PokemonService>();
 builder.Services.AddScoped<ICorPokemonRepository, CorPokemonRepository>();
 builder.Services.AddScoped<IPokemonRepository, PokemonRepository>();
 builder.Services.AddScoped<IConsomeApi, ConsomeApi>();
 builder.Services.AddScoped<AppDbContext>();
+builder.Services.AddScoped<HttpClient>();
 
 builder.Services.AddSwaggerGen(c =>
 {

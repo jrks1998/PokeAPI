@@ -7,19 +7,21 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Service;
 
-public class PokemonService
+public class PokemonService : IPokemonService
 {
     private IConsomeApi _consomeApi;
     private readonly ICorPokemonRepository _corRepository;
     private readonly IPokemonRepository _pokemonRepository;
     private readonly AppDbContext _dbContext;
+    private readonly ILogger<PokemonService> _logger;
 
-    public PokemonService(IConsomeApi consomeApi, ICorPokemonRepository corRepository, IPokemonRepository pokemonRepository, AppDbContext dbContext)
+    public PokemonService(IConsomeApi consomeApi, ICorPokemonRepository corRepository, IPokemonRepository pokemonRepository, AppDbContext dbContext, ILogger<PokemonService> logger)
     {
         _consomeApi = consomeApi;
         _corRepository = corRepository;
         _pokemonRepository = pokemonRepository;
         _dbContext = dbContext;
+        _logger = logger;
     }
 
     public async Task<List<DadosPokemon>> ObterNomesPokemons()
@@ -51,30 +53,31 @@ public class PokemonService
     {
         int i = 1;
         List<Pokemon> listaDadosCadastroPokemon = new List<Pokemon>();
-        var nomePokemons = await ObterNomesPokemons();
+        List<DadosPokemon> nomePokemons = await ObterNomesPokemons();
+        if (nomePokemons == null || nomePokemons.Count == 0)
+        {
+            _logger.LogWarning("Nenhum Pokemon retornado da API");
+            return null;
+        }
+
         foreach (var nomePokemon in nomePokemons)
         {
             string nome = nomePokemon.Nome;
             string corPokemon = await ObterCorPokemon(nome);
+            if (corPokemon == null)
+            {
+                _logger.LogWarning($"Cor do Pokemon {nome} não encontrada");
+                continue;
+            }
             CorPokemon cor = new CorPokemon(corPokemon);
             Pokemon pokemon = new Pokemon(nome, cor);
             listaDadosCadastroPokemon.Add(pokemon);
-            Console.WriteLine($"{i} - {pokemon.Nome}, {pokemon.Cor.Cor}");
+            _logger.LogInformation($"{i} - {pokemon.Nome}, {pokemon.Cor.Cor}");
             i += 1;
         }
-        Console.WriteLine("finalizado");
+        _logger.LogInformation("finalizado");
 
         return listaDadosCadastroPokemon;
-    }
-    public string StringAgrupadoPorCor(Dictionary<string, List<string>> dados)
-    {
-        JsonSerializerOptions options = new JsonSerializerOptions
-        {
-            WriteIndented = true
-        };
-        string jsonAgrupadoPorCorString = JsonSerializer.Serialize(dados, options);
-
-        return jsonAgrupadoPorCorString;
     }
 
     public Dictionary<string, List<string>> CorPokemonAgruparPorCor(List<CorPokemonDTO> corPokemonDTOLista)
@@ -111,6 +114,17 @@ public class PokemonService
         return _pokemonRepository.ObterPokemonPeloNome(nome);
     }
 
+    private CorPokemon CadastrarCorPokemon(string cor)
+    {
+        CorPokemon corPokemon = VerificarPelaCorCorPokemonSalva(cor);
+        if (corPokemon == null)
+        {
+            corPokemon = new CorPokemon(cor);
+            _corRepository.SalvarCor(corPokemon);
+        }
+        return corPokemon;
+    }
+
     public List<Pokemon> CadastrarPokemons(Dictionary<string, List<string>> dadosPokemons)
     {
         List<Pokemon> pokemonsCadastrados = new List<Pokemon>();
@@ -119,12 +133,7 @@ public class PokemonService
         {
             string cor = dadosPokemon.Key;
             List<string> nomes = dadosPokemon.Value;
-            CorPokemon corPokemon = VerificarPelaCorCorPokemonSalva(cor);
-            if (corPokemon == null)
-            {
-                corPokemon = new CorPokemon(cor);
-                _corRepository.SalvarCor(corPokemon);
-            }
+            CorPokemon corPokemon = CadastrarCorPokemon(cor);
             foreach (string nome in nomes)
             {
                 Pokemon pokemon = VerificarPeloNomePokemonSalvo(nome);

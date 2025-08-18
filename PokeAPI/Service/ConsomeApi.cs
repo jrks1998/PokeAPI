@@ -11,33 +11,33 @@ public class ConsomeApi : IConsomeApi
         _client.DefaultRequestHeaders.Add("Connection", "keep-alive");
     }
     
-    public string ObterDadosPokemon()
+    public async Task<string> ObterDadosPokemon()
     {
         try
         {
-            HttpResponseMessage resp = _client.Get(urlBase + "pokemon?limit=10");
+            HttpResponseMessage resp = await _client.GetAsync(urlBase + "pokemon?limit=25");
             resp.EnsureSuccessStatusCode();
-            string json = await resp.Content.ReadAsString();
+            string json = await resp.Content.ReadAsStringAsync();
             return json;
         }
-        catch (HttpRequestException e)
+        catch
         {
-            throw new Exception("Erro ao obter dados dos pokemons, " + e.Message);
+            return null;
         }
     }
 
-    public string ObterDadosEspecies(string nome)
+    public async Task<string> ObterDadosEspecies(string nome)
     {
         try
         {
-            var resp = _client.Get(urlBase + "pokemon-species/" + nome);
+            HttpResponseMessage resp = await _client.GetAsync(urlBase + "pokemon-species/" + nome);
             resp.EnsureSuccessStatusCode();
-            string json = resp.Content.ReadAsString();
+            string json = await resp.Content.ReadAsStringAsync();
             return json;
         }
-        catch (HttpRequestException e)
+        catch
         {
-            throw new Exception("Erro ao obter dados das especies, " + e.Message);
+            return null;
         }
     }
 }

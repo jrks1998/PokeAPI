@@ -2,6 +2,6 @@ namespace Service;
 
 public interface IConsomeApi
 {
-    Task<string> obterDadosPokemon();
-    Task<string> obterDadosEspecies(string nome);
+    Task<string> ObterDadosPokemon();
+    Task<string> ObterDadosEspecies(string nome);
 }
