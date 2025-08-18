@@ -9,6 +9,7 @@ using Service;
 using Data;
 using Repository;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace pokeAPI.Tests;
 
@@ -37,8 +38,6 @@ public class UnitTest1
             ["blue"] = new List<string> { "squirtle" }
         };
 
-        string fakeJson = $"{{\"green\":[\"Bulbasaur\"],\"red\":[\"Charmander\"],\"blue\":[\"squirtle\"]}}";
-
         Mock<IPokemonService> MockPokemonService = new Mock<IPokemonService>();
 
         MockPokemonService
@@ -49,10 +48,6 @@ public class UnitTest1
             .Setup(ps => ps.PokemonAgruparPorCor(fakeListaPokemon))
             .Returns(fakeDictionary);
 
-        MockPokemonService
-            .Setup(ps => ps.StringAgrupadoPorCor(fakeDictionary))
-            .Returns(fakeJson);
-
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
@@ -61,10 +56,35 @@ public class UnitTest1
 
         PokemonController controller = new PokemonController(inMemoryDbContext, MockPokemonService.Object, MockLogger.Object);
 
-        string resultado = await controller.AgruparPorCor();
+        var resultado = await controller.AgruparPorCor();
+        var okResultado = Assert.IsType<OkObjectResult>(resultado.Result);
+        var dadosRetorno = Assert.IsType<Dictionary<string, List<string>>>(okResultado.Value);
 
         Assert.NotNull(resultado);
-        Assert.Equal(fakeJson, resultado);
+        Assert.Equal(fakeDictionary, dadosRetorno);
+    }
+
+    [Fact]
+    public async Task AgruparPorCor_NenhumPokemonEncontrado_RetornaNotFound()
+    {
+        Mock<IPokemonService> mockPokemonService = new Mock<IPokemonService>();
+        mockPokemonService
+            .Setup(ps => ps.ListaPokemon())
+            .ReturnsAsync(new List<Pokemon>());
+
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+        AppDbContext inMemoryDbContext = new AppDbContext(options);
+        Mock<ILogger<PokemonController>> mockLogger = new Mock<ILogger<PokemonController>>();
+
+        PokemonController controller = new PokemonController(inMemoryDbContext, mockPokemonService.Object, mockLogger.Object);
+
+        var resultado = await controller.AgruparPorCor();
+        var notFoundResultado = Assert.IsType<NotFoundObjectResult>(resultado.Result);
+        var mensagemRetorno = Assert.IsType<string>(notFoundResultado.Value);
+
+        Assert.Equal("Nenhum Pokemon encontrado", mensagemRetorno);
     }
 
     [Fact]
@@ -120,7 +140,6 @@ public class UnitTest1
             ["red"] = listaNomesPokemonsVermelhos,
             ["blue"] = listaNomesPokemonsAzuis
         };
-        string fakeJson = $"{{\"green\":[\"Bulbasaur\"],\"red\":[\"Charmander\"],\"blue\":[\"Squirtle\"]}}";
         Mock<IPokemonService> mockPokemonService = new Mock<IPokemonService>();
 
         mockPokemonService
@@ -129,19 +148,43 @@ public class UnitTest1
         mockPokemonService
             .Setup(ps => ps.CorPokemonAgruparPorCor(fakeListaDTO))
             .Returns(fakeDictionary);
-        mockPokemonService
-            .Setup(ps => ps.StringAgrupadoPorCor(fakeDictionary))
-            .Returns(fakeJson);
 
         Mock<ILogger<PokemonController>> mockLogger = new Mock<ILogger<PokemonController>>();
         PokemonController controller = new PokemonController(inMemoryDbContext, mockPokemonService.Object, mockLogger.Object);
-        string resultado = controller.ConsultarPokemonsSalvos();
 
-        Assert.Equal(resultado, fakeJson);
+        var resultado = controller.ConsultarPokemonsSalvos();
+        var okResultado = Assert.IsType<OkObjectResult>(resultado.Result);
+        var dadosRetorno = Assert.IsType<Dictionary<string, List<string>>>(okResultado.Value);
+
+        Assert.NotNull(resultado);
+        Assert.Equal(fakeDictionary, dadosRetorno);
     }
 
     [Fact]
-    public async Task CadastrarPokemon()
+    public void ConsultarPokemonsSalvos_NenhumPokemonCadastrado_RetornaNotFound()
+    {
+        var options = new DbContextOptionsBuilder<AppDbContext>()
+            .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+            .Options;
+        AppDbContext inMemoryDbContext = new AppDbContext(options);
+
+        Mock<IPokemonService> mockPokemonService = new Mock<IPokemonService>();
+        mockPokemonService
+            .Setup(ps => ps.ObterCoresComPokemons())
+            .Returns(new List<CorPokemonDTO>());
+        Mock<ILogger<PokemonController>> mockLogger = new Mock<ILogger<PokemonController>>();
+
+        PokemonController controller = new PokemonController(inMemoryDbContext, mockPokemonService.Object, mockLogger.Object);
+
+        var resultado = controller.ConsultarPokemonsSalvos();
+        var okResultado = Assert.IsType<NotFoundObjectResult>(resultado.Result);
+        var dadosRetorno = Assert.IsType<string>(okResultado.Value);
+
+        Assert.Equal("Nenhum pokemon cadastrado no banco de dados", dadosRetorno);
+    }
+
+    [Fact]
+    public void CadastrarPokemon()
     {
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
@@ -171,7 +214,7 @@ public class UnitTest1
             [corVerde.Cor] = new List<string> { bulbasaur.Nome },
             [corVermelho.Cor] = new List<string> { charmander.Nome }
         };
-        
+
         Mock<IPokemonService> mockPokemonService = new Mock<IPokemonService>();
         Mock<ILogger<PokemonController>> mockLogger = new Mock<ILogger<PokemonController>>();
         PokemonController controller = new PokemonController(inMemoryDbContext, mockPokemonService.Object, mockLogger.Object);
@@ -184,8 +227,11 @@ public class UnitTest1
             .Returns(fakeDictionary);
         DadosRetornoPokemonsCadastrados fakeDadosRetorno = new DadosRetornoPokemonsCadastrados("Pokemons cadastrados com sucesso!", fakeDictionary);
 
-        DadosRetornoPokemonsCadastrados resultado = await controller.CadastrarPokemon(fakeDictionary);
+        var resultado = controller.CadastrarPokemon(fakeDictionary);
+        var okResultado = Assert.IsType<OkObjectResult>(resultado.Result);
+        var dadosRetorno = Assert.IsType<DadosRetornoPokemonsCadastrados>(okResultado.Value);
 
-        Assert.Equal(resultado, fakeDadosRetorno);
+        Assert.NotNull(resultado);
+        Assert.Equal(dadosRetorno, fakeDadosRetorno);
     }
 }

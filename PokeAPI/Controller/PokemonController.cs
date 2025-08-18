@@ -39,7 +39,7 @@ public class PokemonController : ControllerBase
         List<Pokemon> pokemons = await _pokemonService.ListaPokemon();
         if (pokemons == null || pokemons.Count == 0)
         {
-            return NotFound("Nenhum Pokemon encontrado.");
+            return NotFound("Nenhum Pokemon encontrado");
         }
         Dictionary<string, List<string>> dictionaryPokemon = _pokemonService.PokemonAgruparPorCor(pokemons);
         return Ok(dictionaryPokemon);

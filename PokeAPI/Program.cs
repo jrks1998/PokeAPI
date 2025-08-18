@@ -6,10 +6,11 @@ using Serilog;
 using Repository;
 
 var builder = WebApplication.CreateBuilder(args);
-var user = Environment.GetEnvironmentVariable("DB_USER");
-var pass = Environment.GetEnvironmentVariable("DB_PASS");
-var db = Environment.GetEnvironmentVariable("DB_NAME");
-var connectionString = $"Host=localhost;Port=50001;Database={db};Username={user};Password={pass};";
+var user = Environment.GetEnvironmentVariable("DB_USER_POKEAPI");
+var pass = Environment.GetEnvironmentVariable("DB_PASS_POKEAPI");
+var db = Environment.GetEnvironmentVariable("DB_NAME_POKEAPI");
+var dbPort = Environment.GetEnvironmentVariable("DB_PORT_POKEAPI") ?? "5432";
+var connectionString = $"Host=localhost;Port={dbPort};Database={db};Username={user};Password={pass};";
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(connectionString));
 Log.Logger = new LoggerConfiguration()

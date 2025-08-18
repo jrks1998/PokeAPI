@@ -15,7 +15,7 @@ public class ConsomeApi : IConsomeApi
     {
         try
         {
-            HttpResponseMessage resp = await _client.GetAsync(urlBase + "pokemon?limit=25");
+            HttpResponseMessage resp = await _client.GetAsync(urlBase + "pokemon?limit=100");
             resp.EnsureSuccessStatusCode();
             string json = await resp.Content.ReadAsStringAsync();
             return json;

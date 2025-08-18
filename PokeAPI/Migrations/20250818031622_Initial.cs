@@ -30,7 +30,7 @@ namespace pokeApi.Migrations
                 {
                     pokemon_id = table.Column<int>(type: "integer", nullable: false)
                         .Annotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn),
-                    name = table.Column<string>(type: "character varying(100)", maxLength: 100, nullable: false),
+                    name = table.Column<string>(type: "character varying(50)", maxLength: 50, nullable: false),
                     color_id = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
