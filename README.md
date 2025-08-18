@@ -8,16 +8,16 @@ Requisitos para execução do projeto:
 
 Para executar o projeto:
 1. Fazer clone do projeto e acessar o diretório criado https://github.com/jrks1998/PokeAPI.git
-2. Caso esteja usando cmd, executar '''definir_variaveis_ambiente_cmd.bat'''
-Caso esteja usando powershell, executar '''$env:DB_USER_POKEAPI = "usuario_banco"; $env:DB_PASS_POKEAPI = "senha_usuario_banco"; $env:DB_NAME_POKEAPI = "nome_banco"'''
+2. Caso esteja usando cmd, executar ```definir_variaveis_ambiente_cmd.bat```
+Caso esteja usando powershell, executar ```$env:DB_USER_POKEAPI = "usuario_banco"; $env:DB_PASS_POKEAPI = "senha_usuario_banco"; $env:DB_NAME_POKEAPI = "nome_banco"```
 Substituir usuario_banco pelo nome do usuário, senha_usuario_banco pela senha e nomo_banco pelo nome do banco de dados
 Esse projeto usa postgres como banco de dados. por padrão, o PostgreSQL roda na porta 5432. Caso o serviço esteja configurado para rodar em uma posta diferente dessa é possível Definir a variável de ambiente DB_PORT_POKEAPI para definir a porta usada para acessar o serviço do PostgreSQL
-'''$env:DB_PORT_POKEAPI = "porta"'''
+```$env:DB_PORT_POKEAPI = "porta"```
 Substituir porta pelo número da porta
-3. Instalar o dotnet-ef para criar as tabelas '''dotnet tool install --global dotnet-ef'''
-4. Para criar as tabelas, executar '''dotnet ef database update'''
-5. Acessar o diretório PokeAPI e executar '''dotnet run'''
-7. Para executar os testes do controller, acessar o diretório PokeAPI.Tests e executar o código '''dotnet test'''
+3. Instalar o dotnet-ef para criar as tabelas ```dotnet tool install --global dotnet-ef```
+4. Para criar as tabelas, executar ```dotnet ef database update```
+5. Acessar o diretório PokeAPI e executar ```dotnet run```
+7. Para executar os testes do controller, acessar o diretório PokeAPI.Tests e executar o código ```dotnet test```
 
 Endpoints e exemplos:
 1. Swagger disponível em http://localhost:5001/index.html
@@ -26,7 +26,7 @@ http://localhost:5001/swagger/v1/swagger.json
 Exemplos de respostas
 
 200 OK
-'''
+```
 {
   "green": [
     "bulbasaur",
@@ -45,17 +45,17 @@ Exemplos de respostas
     "blastoise"
   ]
 }
-'''
+```
 
 404 Not Found
-'''
+```
 Nenhum Pokemon encontrado
-'''
+```
 3. http://localhost:5001/pokemons/from-db
 Exemplos de respostas
 
 200 OK
-'''
+```
 {
   "green": [
     "Bulbasaur"
@@ -67,15 +67,15 @@ Exemplos de respostas
     "Squirtle"
   ]
 }
-'''
+```
 
 404 Not Found
-'''
+```
 Nenhum pokemon cadastrado no banco de dados
-'''
+```
 4. http://localhost:5001/pokemons/save
-Exemplo de resposta
-'''
+Exemplo de respostas
+```
 {
   "message": "Pokemons cadastrados com sucesso!",
   "groups": {
@@ -87,4 +87,4 @@ Exemplo de resposta
     ]
   }
 }
-'''
+```
