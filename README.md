@@ -17,7 +17,7 @@ Substituir porta pelo número da porta
 3. Instalar o dotnet-ef para criar as tabelas ```dotnet tool install --global dotnet-ef```
 4. Para criar as tabelas, executar ```dotnet ef database update```
 5. Acessar o diretório PokeAPI e executar ```dotnet run```
-7. Para executar os testes do controller, acessar o diretório PokeAPI.Tests e executar o código ```dotnet test```
+7. Para executar os testes do controller, acessar o diretório pokeAPI.Tests e executar o código ```dotnet test```
 
 Endpoints e exemplos:
 1. Swagger disponível em http://localhost:5001/index.html
