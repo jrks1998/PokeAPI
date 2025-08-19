@@ -14,9 +14,10 @@ Substituir usuario_banco pelo nome do usuário, senha_usuario_banco pela senha e
 Esse projeto usa postgres como banco de dados. por padrão, o PostgreSQL roda na porta 5432. Caso o serviço esteja configurado para rodar em uma posta diferente dessa é possível Definir a variável de ambiente DB_PORT_POKEAPI para definir a porta usada para acessar o serviço do PostgreSQL
 ```$env:DB_PORT_POKEAPI = "porta"```
 Substituir porta pelo número da porta
-3. Instalar o dotnet-ef para criar as tabelas ```dotnet tool install --global dotnet-ef```
-4. Para criar as tabelas, executar ```dotnet ef database update```
-5. Acessar o diretório PokeAPI e executar ```dotnet run```
+3. Executar ```dotnet clean```, após, ```dotnet restore``` para limpar, preparar e restaurar as ferramentas do projeto
+4. Instalar o dotnet-ef para criar as tabelas ```dotnet tool install --global dotnet-ef```
+5. Para criar as tabelas, executar ```dotnet ef database update```
+6. Acessar o diretório PokeAPI e executar ```dotnet run```
 7. Para executar os testes do controller, acessar o diretório pokeAPI.Tests e executar o código ```dotnet test```
 
 Endpoints e exemplos:
