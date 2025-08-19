@@ -1,6 +1,6 @@
 ﻿# Arquivos de build e compilação
-PokeAPI/bin/
-PokeAPI/obj/
+*/bin/
+*/obj/
 *.csproj.user
 *.user
 *.suo
