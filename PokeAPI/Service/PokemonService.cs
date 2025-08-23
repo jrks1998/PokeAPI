@@ -26,7 +26,7 @@ public class PokemonService : IPokemonService
 
     public async Task<List<DadosPokemon>> ObterNomesPokemons()
     {
-        var json = await _consomeApi.ObterDadosPokemon();
+        var json = await _consomeApi.ObterDadosPokemon("pokemon?limit=100");
         if (json != null)
         {
             PokemonList listaPokemons = JsonSerializer.Deserialize<PokemonList>(json);
@@ -38,7 +38,7 @@ public class PokemonService : IPokemonService
 
     public async Task<string> ObterCorPokemon(string nome)
     {
-        var json = await _consomeApi.ObterDadosEspecies(nome);
+        var json = await _consomeApi.ObterDadosPokemon("pokemon-species/" + nome);
         if (json != null)
         {
             DadosCorPokemon corPokemon = JsonSerializer.Deserialize<PokemonSpecie>(json).Color;
