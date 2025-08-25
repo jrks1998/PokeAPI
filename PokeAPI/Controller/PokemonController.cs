@@ -24,12 +24,19 @@ public class PokemonController : ControllerBase
     }
 
     [HttpPost("save")]
-    public ActionResult<DadosRetornoPokemonsCadastrados> CadastrarPokemon([FromBody] Dictionary<string, List<string>> dadosPokemons)
+    public async Task<ActionResult<DadosRetornoPokemonsCadastrados>> CadastrarPokemon()
     {
-        List<Pokemon> pokemonsCadastrados = _pokemonService.CadastrarPokemons(dadosPokemons);
+        List<Pokemon> pokemons = await _pokemonService.ListaPokemon();
+        if (pokemons == null || pokemons.Count == 0)
+        {
+            return NotFound("Nenhum Pokemon encontrado");
+        }
+        Dictionary<string, List<string>> dictionaryPokemon = _pokemonService.PokemonAgruparPorCor(pokemons);
+        List<Pokemon> pokemonsCadastrados = _pokemonService.CadastrarPokemons(dictionaryPokemon);
         Dictionary<string, List<string>> agrupado = _pokemonService.PokemonAgruparPorCor(pokemonsCadastrados);
 
         DadosRetornoPokemonsCadastrados retornoPokemonsCadastrados = new DadosRetornoPokemonsCadastrados("Pokemons cadastrados com sucesso!", agrupado);
+        // return Ok(retornoPokemonsCadastrados);
         return Ok(retornoPokemonsCadastrados);
     }
 
