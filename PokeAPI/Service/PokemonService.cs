@@ -141,8 +141,8 @@ public class PokemonService : IPokemonService
                 {
                     pokemon = new Pokemon(nome, corPokemon);
                     _pokemonRepository.SalvarPokemon(pokemon);
+                    pokemonsCadastrados.Add(pokemon);
                 }
-                pokemonsCadastrados.Add(pokemon);
             }
         }
 

@@ -16,7 +16,7 @@ namespace pokeAPI.Tests;
 public class UnitTest1
 {
     [Fact]
-    public async Task AgruparPorCor()
+    public async void AgruparPorCor()
     {
         CorPokemon green = new CorPokemon("green");
         CorPokemon red = new CorPokemon("red");
@@ -184,41 +184,71 @@ public class UnitTest1
     }
 
     [Fact]
-    public void CadastrarPokemon()
+    public async void CadastrarPokemon()
     {
+        CorPokemon green = new CorPokemon("green");
+        CorPokemon red = new CorPokemon("red");
+        CorPokemon blue = new CorPokemon("blue");
+
+        Pokemon bulbasaur = new Pokemon("bulbasaur", green);
+        Pokemon charmander = new Pokemon("charmander", red);
+        Pokemon squirtle = new Pokemon("squirtle", blue);
+
+        List<Pokemon> fakeListaPokemon = new List<Pokemon>();
+        fakeListaPokemon.Add(bulbasaur);
+        fakeListaPokemon.Add(charmander);
+        fakeListaPokemon.Add(squirtle);
+
+        Dictionary<string, List<string>> fakeDictionary = new Dictionary<string, List<string>>
+        {
+            ["green"] = new List<string> { "bulbasaur" },
+            ["red"] = new List<string> { "charmander" },
+            ["blue"] = new List<string> { "squirtle" }
+        };
+
+        Mock<IPokemonService> MockPokemonService = new Mock<IPokemonService>();
+
+        MockPokemonService
+            .Setup(ps => ps.ListaPokemon())
+            .ReturnsAsync(fakeListaPokemon);
+
+        MockPokemonService
+            .Setup(ps => ps.PokemonAgruparPorCor(fakeListaPokemon))
+            .Returns(fakeDictionary);
+
         var options = new DbContextOptionsBuilder<AppDbContext>()
             .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
             .Options;
         AppDbContext inMemoryDbContext = new AppDbContext(options);
+        Mock<ILogger<PokemonController>> MockLogger = new Mock<ILogger<PokemonController>>();
 
-        List<Pokemon> fakeListaPokemon = new List<Pokemon>();
+        PokemonController controller = new PokemonController(inMemoryDbContext, MockPokemonService.Object, MockLogger.Object);
 
-        CorPokemon corVerde = new CorPokemon("green");
-        Pokemon bulbasaur = new Pokemon("Bulbasaur", corVerde);
-        fakeListaPokemon.Add(bulbasaur);
-        corVerde.Pokemons.Add(bulbasaur);
-        inMemoryDbContext.Cores.Add(corVerde);
+        var resultadoAgruparPorCor = await controller.AgruparPorCor();
+        var okResultadoAgruparPorCor = Assert.IsType<OkObjectResult>(resultadoAgruparPorCor.Result);
+        var dadosRetornoAgruparPorCor = Assert.IsType<Dictionary<string, List<string>>>(okResultadoAgruparPorCor.Value);
+
+        Assert.NotNull(resultadoAgruparPorCor);
+        Assert.Equal(fakeDictionary, dadosRetornoAgruparPorCor);
+
+        green.Pokemons.Add(bulbasaur);
+        inMemoryDbContext.Cores.Add(green);
         inMemoryDbContext.Pokemons.Add(bulbasaur);
 
-        CorPokemon corVermelho = new CorPokemon("red");
-        Pokemon charmander = new Pokemon("Charmander", corVermelho);
-        fakeListaPokemon.Add(charmander);
-        corVermelho.Pokemons.Add(charmander);
-        inMemoryDbContext.Cores.Add(corVermelho);
+        red.Pokemons.Add(charmander);
+        inMemoryDbContext.Cores.Add(red);
         inMemoryDbContext.Pokemons.Add(charmander);
+
+        blue.Pokemons.Add(charmander);
+        inMemoryDbContext.Cores.Add(blue);
+        inMemoryDbContext.Pokemons.Add(squirtle);
 
         inMemoryDbContext.SaveChanges();
 
-        Dictionary<string, List<string>> fakeDictionary = new Dictionary<string, List<string>>
-        {
-            [corVerde.Cor] = new List<string> { bulbasaur.Nome },
-            [corVermelho.Cor] = new List<string> { charmander.Nome }
-        };
-
         Mock<IPokemonService> mockPokemonService = new Mock<IPokemonService>();
-        Mock<ILogger<PokemonController>> mockLogger = new Mock<ILogger<PokemonController>>();
-        PokemonController controller = new PokemonController(inMemoryDbContext, mockPokemonService.Object, mockLogger.Object);
-
+        mockPokemonService
+            .Setup(ps => ps.PokemonAgruparPorCor(fakeListaPokemon))
+            .Returns(fakeDictionary);
         mockPokemonService
             .Setup(ps => ps.CadastrarPokemons(fakeDictionary))
             .Returns(fakeListaPokemon);
@@ -227,11 +257,12 @@ public class UnitTest1
             .Returns(fakeDictionary);
         DadosRetornoPokemonsCadastrados fakeDadosRetorno = new DadosRetornoPokemonsCadastrados("Pokemons cadastrados com sucesso!", fakeDictionary);
 
-        var resultado = controller.CadastrarPokemon(fakeDictionary);
-        var okResultado = Assert.IsType<OkObjectResult>(resultado.Result);
-        var dadosRetorno = Assert.IsType<DadosRetornoPokemonsCadastrados>(okResultado.Value);
+        var resultadoCadastrarPokemon = controller.CadastrarPokemon();
+        var actionResultCadastrarPokemon = Assert.IsType<ActionResult<DadosRetornoPokemonsCadastrados>>(resultadoCadastrarPokemon.Result);
+        var okResultadoCadastrarPorCor = Assert.IsType<OkObjectResult>(actionResultCadastrarPokemon.Result);
+        var dadosRetornoCadastrarPorCor = Assert.IsType<DadosRetornoPokemonsCadastrados>(okResultadoCadastrarPorCor.Value);
 
-        Assert.NotNull(resultado);
-        Assert.Equal(dadosRetorno, fakeDadosRetorno);
+        Assert.NotNull(resultadoCadastrarPokemon);
+        Assert.Equal(dadosRetornoAgruparPorCor, fakeDictionary);
     }
 }

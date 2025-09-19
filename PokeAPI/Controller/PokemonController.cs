@@ -36,7 +36,6 @@ public class PokemonController : ControllerBase
         Dictionary<string, List<string>> agrupado = _pokemonService.PokemonAgruparPorCor(pokemonsCadastrados);
 
         DadosRetornoPokemonsCadastrados retornoPokemonsCadastrados = new DadosRetornoPokemonsCadastrados("Pokemons cadastrados com sucesso!", agrupado);
-        // return Ok(retornoPokemonsCadastrados);
         return Ok(retornoPokemonsCadastrados);
     }
 
